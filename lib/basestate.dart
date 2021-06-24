@@ -38,18 +38,16 @@ abstract class _BaseStateCore {
   }
 
   Future<void> setState(FutureOr<void> Function()? op,
-      {String errorText = 'error',
-      bool waitSignal = true,
+      {bool waitSignal = true,
       bool doneSuccessSignal = true,
       bool doneErrorSignal = true,
-      FutureOr<void> Function(dynamic e)? onDoneError}) async {
+      String Function(dynamic e)? onDoneError}) async {
     try {
       wait(signal: waitSignal);
       await op?.call();
       doneSuccess(signal: doneSuccessSignal);
     } catch (e) {
-      await onDoneError?.call(e);
-      doneError(errorText, signal: doneErrorSignal);
+      doneError(onDoneError?.call(e) ?? e.toString(), signal: doneErrorSignal);
     }
   }
 
